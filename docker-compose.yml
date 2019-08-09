@@ -1,0 +1,66 @@
+version: '3.7'
+
+services:
+
+  test-app:
+    image: ubuntu:18.04
+    command: 'bash /init.sh'
+    volumes:
+      - ./config/test-app/init.sh:/init.sh
+
+  filebeat:
+    hostname: filebeat
+    image: docker.elastic.co/beats/filebeat:7.2.0
+    user: root
+    command: 'bash /init.sh'
+    volumes:
+      - ./config/filebeat/init.sh:/init.sh
+      - ./config/filebeat/filebeat.yml:/filebeat.yml
+      - /var/lib/docker/containers:/usr/share/dockerlogs/data:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    links:
+      - logstash
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    hostname: kibana
+    environment:
+      - "LOGGING_QUIET=true"
+    links:
+      - elasticsearch
+    ports:
+      - 127.0.0.1:5601:5601
+      
+  logstash: 
+    image: docker.elastic.co/logstash/logstash:7.2.0
+    hostname: logstash
+    volumes:
+      - ./config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - 5044:5044
+    environment:
+      LOG_LEVEL: error
+    links:
+      - elasticsearch
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    hostname: elasticsearch
+    #volumes:
+    #  - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      - cluster.name=docker-logs-elk-cluster
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data      
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 127.0.0.1:9200:9200
+
+volumes:
+  elasticsearch:
