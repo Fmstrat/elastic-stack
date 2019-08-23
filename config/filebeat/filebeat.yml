@@ -18,6 +18,11 @@ processors:
     overwrite_keys: true
 - add_docker_metadata:
     host: "unix:///var/run/docker.sock"
+- drop_event:
+    when:
+      or:
+        - contains:
+            container.labels.com_docker_compose_project: "elastic-stack"
 
 filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml

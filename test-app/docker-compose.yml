@@ -1,0 +1,9 @@
+version: '3.7'
+
+services:
+
+  test-app:
+    image: ubuntu:18.04
+    command: 'bash /init.sh'
+    volumes:
+      - ./config/test-app/init.sh:/init.sh

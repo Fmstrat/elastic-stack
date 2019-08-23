@@ -2,11 +2,19 @@ version: '3.7'
 
 services:
 
-  test-app:
-    image: ubuntu:18.04
-    command: 'bash /init.sh'
+  metricbeat:
+    hostname: metricbeat
+    image: docker.elastic.co/beats/metricbeat:7.2.0
+    user: root
     volumes:
-      - ./config/test-app/init.sh:/init.sh
+      - ./config/metricbeat/init.sh:/init.sh
+      - ./config/metricbeat/metricbeat.yml:/metricbeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    links:
+      - elasticsearch
 
   filebeat:
     hostname: filebeat
