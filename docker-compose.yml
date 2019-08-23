@@ -4,7 +4,7 @@ services:
 
   metricbeat:
     hostname: metricbeat
-    image: docker.elastic.co/beats/metricbeat:7.2.0
+    image: docker.elastic.co/beats/metricbeat:7.3.1
     user: root
     volumes:
       - ./config/metricbeat/init.sh:/init.sh
@@ -18,7 +18,7 @@ services:
 
   filebeat:
     hostname: filebeat
-    image: docker.elastic.co/beats/filebeat:7.2.0
+    image: docker.elastic.co/beats/filebeat:7.3.1
     user: root
     command: 'bash /init.sh'
     volumes:
@@ -30,7 +30,7 @@ services:
       - logstash
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.2.0
+    image: docker.elastic.co/kibana/kibana:7.3.1
     hostname: kibana
     environment:
       - "LOGGING_QUIET=true"
@@ -40,7 +40,7 @@ services:
       - 127.0.0.1:5601:5601
       
   logstash: 
-    image: docker.elastic.co/logstash/logstash:7.2.0
+    image: docker.elastic.co/logstash/logstash:7.3.1
     hostname: logstash
     volumes:
       - ./config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
@@ -52,7 +52,7 @@ services:
       - elasticsearch
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     hostname: elasticsearch
     #volumes:
     #  - ./config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
